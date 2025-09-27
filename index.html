@@ -2,24 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Redirecting...</title>
-  <!-- Redirect after 1 second -->
-  <meta http-equiv="refresh" content="1;url=https://sites.google.com/view/parteek-malik/home">
+  <title>Form Example</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 100px;
-    }
-    a {
-      color: blue;
-      text-decoration: none;
-      font-weight: bold;
-    }
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+    input, button { padding: 8px; margin: 5px; }
+    #result { margin-top: 20px; font-size: 1.2em; color: darkblue; }
   </style>
 </head>
 <body>
-  <h2>Redirecting you to my official Google Site...</h2>
-  <p>If it doesn’t redirect, <a href="https://sites.google.com/view/parteek-malik/home">click here</a>.</p>
+  <h1>Enter Your Details</h1>
+  
+  <form id="myForm">
+    <input type="text" id="name" placeholder="Enter your name" required>
+    <input type="number" id="age" placeholder="Enter your age" required>
+    <button type="submit">Submit</button>
+  </form>
+  
+  <div id="result"></div>
+  
+  <script>
+    document.getElementById("myForm").addEventListener("submit", function(e) {
+      e.preventDefault(); // prevent page reload
+      
+      let name = document.getElementById("name").value.trim().toLowerCase();
+      let age = document.getElementById("age").value.trim();
+      
+      if (name === "jaat" && age === "2000") {
+        // Redirect to your Google Site
+        window.location.href = "https://sites.google.com/view/parteek-malik/home";
+      } else {
+        // Show name and age
+        document.getElementById("result").innerText = "Hello " + 
+          document.getElementById("name").value.trim() + 
+          ", your age is " + age;
+      }
+    });
+  </script>
 </body>
 </html>
