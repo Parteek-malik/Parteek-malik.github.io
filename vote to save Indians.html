@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vote to Save Aman</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+      background-color: #f7f7f7;
+    }
+    h1 {
+      color: #333;
+    }
+    button {
+      padding: 15px 30px;
+      margin: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .votes {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Vote to Save Aman</h1>
+
+  <button onclick="vote('Aman')">Vote for Aman</button>
+  <button onclick="vote('Other')">Vote for Other</button>
+
+  <div class="votes">
+    <p>Aman Votes: <span id="votesAman">0</span></p>
+    <p>Other Votes: <span id="votesOther">0</span></p>
+  </div>
+
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+      databaseURL: "https://vote-to-save-indians-default-rtdb.asia-southeast1.firebasedatabase.app/" // <-- Replace this with your Firebase DB URL
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database(app);
+
+    // Function to vote
+    function vote(candidate) {
+      if(localStorage.getItem('voted')) {
+        alert("You have already voted!");
+        return;
+      }
+
+      // This is your code snippet attached
+      const voteRef = database.ref('votes/' + candidate);
+      voteRef.get().then((snapshot) => {
+        let currentVotes = snapshot.exists() ? snapshot.val() : 0;
+        voteRef.set(currentVotes + 1)
+          .then(() => {
+            localStorage.setItem('voted', 'true');
+            alert("Thank you for voting!");
+          })
+          .catch((err) => console.error(err));
+      });
+    }
+
+    // Function to update votes in real-time
+    function updateVotes() {
+      const amanRef = database.ref('votes/Aman');
+      const otherRef = database.ref('votes/Other');
+
+      amanRef.on('value', (snapshot) => {
+        document.getElementById('votesAman').innerText = snapshot.exists() ? snapshot.val() : 0;
+      });
+
+      otherRef.on('value', (snapshot) => {
+        document.getElementById('votesOther').innerText = snapshot.exists() ? snapshot.val() : 0;
+      });
+    }
+
+    updateVotes();
+  </script>
+
+</body>
+</html>
