@@ -1,4 +1,4 @@
-     <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -16,6 +16,15 @@
       padding: 40px;
       background-color: #f7f7f7;
     }
+
+    /* Logo styling */
+    .logo {
+      width: 150px;
+      max-width: 50%;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
     h1 {
       color: #333;
       margin-bottom: 10px;
@@ -65,6 +74,9 @@
 </head>
 <body>
 
+  <!-- Logo -->
+  <img src="file_000000006bdc7206a62d2485c98c4594.png" alt="Logo" class="logo">
+
   <h1>Vote to Support Safe Return of Indians Abroad</h1>
   <p>
     Many Indians are currently stranded in regions affected by international conflicts. 
@@ -110,7 +122,7 @@
   <script>
     // 🔹 Firebase Configuration
     const firebaseConfig = {
-      databaseURL: "https://vote-to-save-indians-default-rtdb.asia-southeast1.firebasedatabase.app/" // Replace this with your Firebase Realtime Database URL
+      databaseURL: "https://vote-to-save-indians-default-rtdb.asia-southeast1.firebasedatabase.app/" // Replace with your Firebase URL
     };
     const app = firebase.initializeApp(firebaseConfig);
     const database = firebase.database(app);
@@ -141,7 +153,7 @@
       });
       alert("Votes reset to 0!");
     }
-    // resetVotes(); // Uncomment this line once to reset votes, then comment again
+    // resetVotes(); // Uncomment once to reset votes, then comment again
 
     // 🔹 Update votes in real time
     function updateVotes() {
