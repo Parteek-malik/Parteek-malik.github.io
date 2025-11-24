@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
         <!-- Replace this title with your own page title -->
         Simple HTML with CSS
     </title>
     <style>
         body {
-            font-family: cursive;
+            font-family: cursive; /* Change the font here if you want */
             background-color: #f2f2f2;
             text-align: center;
             padding: 50px;
@@ -26,10 +24,14 @@
     </style>
 </head>
 <body>
+
+    <!-- Replace this heading with your own heading -->
     <h1>Welcome to My Page</h1>
+
     <p>
         <!-- Replace this paragraph with your own text -->
         This is a simple HTML page with CSS styling.
     </p>
+
 </body>
 </html>
