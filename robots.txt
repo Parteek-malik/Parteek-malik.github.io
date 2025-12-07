@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
 Sitemap: https://parteek-malik.github.io/sitemap.xml
