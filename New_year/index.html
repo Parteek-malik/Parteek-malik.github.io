@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2026 Celebration</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow-x: hidden; background: #000; }
+        #bg {
+            position: fixed;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+            z-index: 1;
+        }
+        #confetti {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .ui {
+            position: relative;
+            z-index: 3;
+            color: white;
+            text-align: center;
+            padding-top: 5vh;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #timer { 
+            font-size: clamp(3rem, 15vw, 9rem); 
+            font-weight: 900; 
+            margin: 10px 0; 
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        #msg { 
+            font-size: 1.2rem; 
+            letter-spacing: 8px; 
+            color: #ffd700; 
+            text-transform: uppercase;
+        }
+        /* Hidden by default, fades in after countdown */
+        #celebration-image {
+            margin-top: 20px;
+            max-width: 90%;
+            width: 550px;
+            max-height: 50vh; /* Prevents scrolling on smaller screens */
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.2);
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 2s ease, transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            visibility: hidden;
+        }
+        #celebration-image.show {
+            visibility: visible;
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body>
+
+<div id="bg"></div>
+<canvas id="confetti"></canvas>
+
+<div class="ui">
+    <p id="msg">Counting down to 2026</p>
+    <div id="timer">00:00:00</div>
+    <img id="celebration-image" src="new_year.jpg" alt="Happy New Year 2026">
+</div>
+
+<script>
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    const timerEl = document.getElementById('timer');
+    const msgEl = document.getElementById('msg');
+    const celebrationImg = document.getElementById('celebration-image');
+    let particles = [];
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+        constructor() {
+            this.x = canvas.width / 2;
+            this.y = canvas.height / 2;
+            this.vx = (Math.random() - 0.5) * 22;
+            this.vy = (Math.random() - 0.5) * 22;
+            this.gravity = 0.15;
+            this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+            this.size = Math.random() * 6 + 2;
+            this.opacity = 1;
+            this.decay = Math.random() * 0.01 + 0.005;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            this.vy += this.gravity;
+            this.opacity -= this.decay;
+        }
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.globalAlpha = this.opacity;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function explode() {
+        for (let i = 0; i < 75; i++) particles.push(new Particle());
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles = particles.filter(p => p.opacity > 0);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+    }
+
+    function startCelebration() {
+        timerEl.innerText = "2026";
+        msgEl.innerText = "🎉 HAPPY NEW YEAR 🎉";
+        
+        // This is the line that makes the image show up!
+        celebrationImg.classList.add('show');
+        
+        explode();
+        const burstInterval = setInterval(explode, 250);
+        setTimeout(() => {
+            clearInterval(burstInterval);
+            setInterval(explode, 2500);
+        }, 2000);
+    }
+
+    let hasFinished = false;
+
+    function checkTime() {
+        const target = new Date("January 1, 2026 00:00:00").getTime();
+        const now = new Date().getTime();
+        const diff = target - now;
+
+        if (diff <= 0) {
+            if (!hasFinished) {
+                startCelebration();
+                hasFinished = true;
+            }
+            return;
+        }
+
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / 1000 / 60) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        timerEl.innerText = [h, m, s].map(v => v.toString().padStart(2, '0')).join(':');
+    }
+
+    animate();
+    checkTime(); 
+    if (!hasFinished) setInterval(checkTime, 1000);
+</script>
+</body>
+  </html>
+  
