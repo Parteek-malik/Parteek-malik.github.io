@@ -1,0 +1,34 @@
+from datetime import date
+attempts = 5
+for i in range(attempts):
+    username = input("Enter username: ")
+    password = input("Enter password: ")
+
+    if username == "Parteek" and password == "royaljaat777":
+        print("Access Granted")
+
+        print("\nWhat do you like to know?")
+        print("(a) Your website URL")
+        print("(b) Your email ID")
+        print("(c) Today's date")
+
+        choice = input("Enter your choice (a/b/c): ")
+
+        if choice == 'a':
+            print("Your website URL is: https://sites.google.com/view/parteek-malik")
+
+        elif choice == 'b':
+            print("Your email ID is: pratikmalik429@gmail.com")
+
+        elif choice == 'c':
+            print("Today's date is:", date.today())
+
+        else:
+            print("Invalid choice")
+
+        break
+    else:
+        print("Wrong username or password. Attempts left:", 2 - i)
+
+else:
+    print("Access Denied")
