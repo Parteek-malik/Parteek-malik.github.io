@@ -28,7 +28,7 @@ for i in range(attempts):
 
         break
     else:
-        print("Wrong username or password. Attempts left:", 2 - i)
+        print("Wrong username or password. Attempts left:", attempts - 1 - i)
 
 else:
     print("Access Denied")
