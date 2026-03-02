@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Adolescence Advanced MCQ Test</title>
+<style>
+body{
+    font-family: Arial;
+    background:#f4f9ff;
+    padding:20px;
+}
+.container{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    max-width:800px;
+    margin:auto;
+    box-shadow:0 0 10px gray;
+}
+.question{
+    margin-bottom:20px;
+}
+.option{
+    display:block;
+    padding:8px;
+    margin:5px 0;
+    border:2px solid #ccc;
+    border-radius:6px;
+    cursor:pointer;
+}
+.correct{
+    background:#d4edda;
+    border-color:green;
+}
+.wrong{
+    background:#f8d7da;
+    border-color:red;
+}
+button{
+    margin-top:15px;
+    padding:10px 18px;
+    border:none;
+    background:#007BFF;
+    color:white;
+    border-radius:6px;
+    cursor:pointer;
+}
+.explanation{
+    font-size:14px;
+    margin-top:5px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>Adolescence MCQ Test (Class 8)</h2>
+
+<div id="quiz"></div>
+
+<button onclick="checkAnswers()">Submit</button>
+<button onclick="showAnswers()">Show Answers</button>
+
+<h3 id="result"></h3>
+</div>
+
+<script>
+
+const questions = [
+{
+q:"1. Adolescence is the period between:",
+options:["5-10 years","11-19 years","20-30 years"],
+answer:1,
+explanation:"Adolescence is the stage between 11-19 years when major physical and mental changes occur."
+},
+{
+q:"2. The stage when body becomes capable of reproduction:",
+options:["Puberty","Growth","Childhood"],
+answer:0,
+explanation:"Puberty is the stage during adolescence when reproductive organs mature."
+},
+{
+q:"3. Male hormone responsible for changes:",
+options:["Testosterone","Estrogen","Insulin"],
+answer:0,
+explanation:"Testosterone controls physical changes in boys during puberty."
+},
+{
+q:"4. Female hormone responsible for changes:",
+options:["Adrenaline","Estrogen","Thyroxine"],
+answer:1,
+explanation:"Estrogen controls development of female reproductive organs."
+},
+{
+q:"5. Sudden emotional changes are called:",
+options:["Mood swings","Reflex","Mutation"],
+answer:0,
+explanation:"Mood swings happen due to hormonal changes during adolescence."
+},
+{
+q:"6. Rapid increase in height is called:",
+options:["Growth spurt","Respiration","Digestion"],
+answer:0,
+explanation:"Growth spurt means sudden increase in height during adolescence."
+},
+{
+q:"7. Hormones are secreted by:",
+options:["Endocrine glands","Lungs","Stomach"],
+answer:0,
+explanation:"Endocrine glands release hormones directly into bloodstream."
+},
+{
+q:"8. Balanced diet is important because:",
+options:["Body grows rapidly","For taste only","For sleep only"],
+answer:0,
+explanation:"Adolescents need nutrients because body growth is rapid."
+},
+{
+q:"9. Voice change in boys is due to:",
+options:["Growth of larynx","Eye growth","Stomach growth"],
+answer:0,
+explanation:"Larynx grows larger causing deepening of voice."
+},
+{
+q:"10. Adolescence prepares a person for:",
+options:["Adulthood","Childhood","Old age"],
+answer:0,
+explanation:"Adolescence prepares an individual physically and mentally for adulthood."
+}
+];
+
+const quizDiv = document.getElementById("quiz");
+
+questions.forEach((item,index)=>{
+    let div = document.createElement("div");
+    div.classList.add("question");
+    div.innerHTML = "<p>"+item.q+"</p>";
+    
+    item.options.forEach((opt,i)=>{
+        div.innerHTML += `
+        <label class="option">
+        <input type="radio" name="q${index}" value="${i}">
+        ${opt}
+        </label>`;
+    });
+
+    div.innerHTML += `<div class="explanation" id="exp${index}"></div>`;
+    quizDiv.appendChild(div);
+});
+
+function checkAnswers(){
+    let score=0;
+    questions.forEach((item,index)=>{
+        let selected=document.querySelector('input[name="q'+index+'"]:checked');
+        let options=document.getElementsByName("q"+index);
+        
+        options.forEach((opt,i)=>{
+            opt.parentElement.classList.remove("correct","wrong");
+            if(i==item.answer){
+                opt.parentElement.classList.add("correct");
+            }
+        });
+
+        if(selected){
+            if(parseInt(selected.value)===item.answer){
+                score++;
+            } else {
+                selected.parentElement.classList.add("wrong");
+            }
+        }
+        document.getElementById("exp"+index).innerHTML="<b>Explanation:</b> "+item.explanation;
+    });
+    document.getElementById("result").innerHTML="Your Score: "+score+" / 10";
+}
+
+function showAnswers(){
+    questions.forEach((item,index)=>{
+        let options=document.getElementsByName("q"+index);
+        options.forEach((opt,i)=>{
+            opt.parentElement.classList.remove("correct","wrong");
+            if(i==item.answer){
+                opt.parentElement.classList.add("correct");
+            }
+        });
+        document.getElementById("exp"+index).innerHTML="<b>Explanation:</b> "+item.explanation;
+    });
+}
+
+</script>
+
+</body>
+</html>
