@@ -1,52 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Sample Transaction Message</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .message-box {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      width: 300px;
-    }
-    .title {
-      color: red;
-      font-size: 12px;
-      margin-bottom: 10px;
-    }
-    .amount {
-      font-size: 22px;
-      font-weight: bold;
-      color: green;
-    }
-    .details {
-      margin-top: 10px;
-      font-size: 14px;
-      color: #333;
-    }
-  </style>
-</head>
-<body>
-
-<div class="message-box">
-  <div class="title">₹250 credit</div>
-  <div class="amount">₹50 Credited</div>
-  <div class="details">
-    Transaction ID: 12647902384<br>
-    Date: 31-Mar-2026<br>
-    Balance: ₹5,500.00
-  </div>
-</div>
-
-</body>
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+  <meta charset="UTF-8">  
+  <title>₹250 transition</title>  
+  <style>  
+    body {  
+      font-family: Arial, sans-serif;  
+      background: #f2f2f2;  
+      display: flex;  
+      justify-content: center;  
+      align-items: center;  
+      height: 100vh;  
+      flex-direction: column;  
+    }  
+    button {  
+      padding: 10px 20px;  
+      font-size: 16px;  
+      border: none;  
+      border-radius: 8px;  
+      background: #4CAF50;  
+      color: white;  
+      cursor: pointer;  
+    }  
+    .message-box {  
+      display: none;  
+      margin-top: 20px;  
+      background: #fff;  
+      padding: 20px;  
+      border-radius: 10px;  
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);  
+      width: 300px;  
+      text-align: left;  
+    }  
+    .title {  
+      color: red;  
+      font-size: 12px;  
+      margin-bottom: 10px;  
+    }  
+    .amount {  
+      font-size: 22px;  
+      font-weight: bold;  
+      color: green;  
+    }  
+    .details {  
+      margin-top: 10px;  
+      font-size: 14px;  
+      color: #333;  
+    }  
+  </style>  
+</head>  
+<body>  
+  
+<button onclick="showMessage()">Show Transaction</button>  
+  
+<div class="message-box" id="msgBox">  
+  <div class="title">[₹250 transition]</div>  
+  <div class="amount">₹250 Credited</div>  
+  <div class="details">  
+    Transaction ID: 1234567890<br>  
+    Date: 31-Mar-2026<br>  
+    Balance: ₹5,450.00  
+  </div>  
+</div>  
+  
+<script>  
+  function showMessage() {  
+    document.getElementById("msgBox").style.display = "block";  
+    
+    alert("[SAMPLE]\n\n₹250 has been credited to your account.");  
+  }  
+</script>  
+  
+</body>  
 </html>
