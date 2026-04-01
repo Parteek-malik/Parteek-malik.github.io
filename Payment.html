@@ -3,52 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>₹2,500 transition by Parteek</title>
+  <title>₹2500 transition by Parteek</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      background: #e6f0ff;
+      margin: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
-      flex-direction: column;
     }
 
-    button {
-      padding: 12px 20px;
-      font-size: 16px;
+    .app {
+      width: 100%;
+      max-width: 360px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .btn {
+      padding: 12px;
+      width: 100%;
       border: none;
-      border-radius: 8px;
-      background: #4CAF50;
+      border-radius: 10px;
+      background: #2962ff;
       color: white;
+      font-size: 16px;
       cursor: pointer;
     }
 
     .loading {
       display: none;
       margin-top: 20px;
-      font-size: 18px;
-      color: #333;
     }
 
-    .message-box {
+    .success {
       display: none;
       margin-top: 20px;
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-      width: 90%;
-      max-width: 320px;
-      text-align: left;
     }
 
-    .title {
-      color: red;
-      font-size: 12px;
-      margin-bottom: 10px;
+    .tick {
+      font-size: 50px;
+      color: green;
     }
 
     .amount {
@@ -57,51 +58,65 @@
       color: green;
     }
 
-    .details {
-      margin-top: 10px;
-      font-size: 14px;
-      color: #333;
+    .note {
+      font-size: 12px;
+      color: red;
     }
   </style>
 </head>
 <body>
 
-<button onclick="startProcess()">Send ₹2,500</button>
+<div class="app">
+  <h3>UPI Payment</h3>
 
-<div class="loading" id="loading">Processing...</div>
+  <button class="btn" id="payBtn" onclick="start()">Pay ₹2500</button>
 
-<div class="message-box" id="msgBox">
-  <div class="title">[₹2,500 transition by Parteek]</div>
-  <div class="amount">₹2,500 Credited</div>
-  <div class="details">
-    Transaction ID: 8295592729<br>
-    Date: 1-April-2026<br>
-    Balance: ₹7,450.00
+  <div class="loading" id="loading">Processing payment...</div>
+
+  <div class="success" id="success">
+    <div class="tick">✔</div>
+    <div class="amount">₹2500 Credited to your account</div>
   </div>
 </div>
 
-<!-- Sound (simple beep) -->
 <audio id="sound">
-  <source src="https://www.soundjay.com/buttons/sounds/button-3.mp3" type="audio/mpeg">
+  <source src="https://www.soundjay.com/buttons/sounds/button-3.mp3">
 </audio>
 
 <script>
-function startProcess() {
+async function start() {
+  const btn = document.getElementById("payBtn");
+
+  // Ask permission FIRST
+  if (Notification.permission === "default") {
+    let permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      alert("Please allow notifications to continue 😄");
+      return;
+    }
+  }
+
+  // Continue process
+  btn.style.display = "none";
   document.getElementById("loading").style.display = "block";
 
   setTimeout(() => {
     document.getElementById("loading").style.display = "none";
-    document.getElementById("msgBox").style.display = "block";
+    document.getElementById("success").style.display = "block";
 
-    // Play sound
     document.getElementById("sound").play();
 
-    // Auto alert popup
-    setTimeout(() => {
-      alert("\n\n₹2500 has been credited to your account.");
-    }, 500);
+    if (navigator.vibrate) navigator.vibrate(200);
 
-  }, 2500); // 2.5 sec delay
+    // Show notification
+    if (Notification.permission === "granted") {
+      new Notification("UPI", {
+        body: "₹250 was credited had been credited to your account.",
+        icon: "https://cdn-icons-png.flaticon.com/512/2331/2331945.png"
+      });
+    }
+
+  }, 2500);
 }
 </script>
 
