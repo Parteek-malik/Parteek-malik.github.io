@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-
-  <!-- 🔥 Important for mobile -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Book Downloader</title>
 
   <style>
@@ -32,7 +29,6 @@
 
     h2 {
       margin-bottom: 15px;
-      font-size: 22px;
     }
 
     select, button {
@@ -44,45 +40,22 @@
       font-size: 16px;
     }
 
-    select {
-      background: #f1f1f1;
-    }
-
     button {
       background: #667eea;
       color: white;
       font-weight: bold;
       cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #4b5bdc;
     }
 
     #info {
       margin-top: 15px;
       font-weight: bold;
-      color: #333;
-      font-size: 15px;
     }
 
     footer {
       margin-top: 15px;
       font-size: 13px;
       color: gray;
-    }
-
-    /* 📱 Extra small devices */
-    @media (max-width: 350px) {
-      h2 {
-        font-size: 18px;
-      }
-
-      select, button {
-        font-size: 14px;
-        padding: 10px;
-      }
     }
   </style>
 </head>
@@ -93,7 +66,6 @@
 
   <h2>📚 Book Downloader</h2>
 
-  <!-- Subject -->
   <select id="subject" onchange="updateBooks()">
     <option value="">Select Subject</option>
     <option value="english">English</option>
@@ -103,7 +75,6 @@
     <option value="science">Science</option>
   </select>
 
-  <!-- Book -->
   <select id="book" onchange="updateInfo()">
     <option value="">Select Book</option>
   </select>
@@ -119,16 +90,15 @@
 <script>
 const booksData = {
   english: ["Kaveri"],
-  hindi: ["Kshitij"],
+  hindi: ["Kshitij"], // ✅ changed
   maths: ["Mathematics"],
-  social: ["History", "Political science", "Geography", "Economics"],
+  social: ["History", "Civics", "Geography", "Economics"],
   science: ["Science"]
 };
 
 function updateBooks() {
   const subject = document.getElementById("subject").value;
   const bookSelect = document.getElementById("book");
-  const info = document.getElementById("info");
 
   bookSelect.innerHTML = '<option value="">Select Book</option>';
 
@@ -177,6 +147,18 @@ function downloadBook() {
     return;
   }
 
+  // 🔥 Special case for Science (Google Drive)
+  if (book === "Science") {
+    const link = document.createElement("a");
+    link.href = "https://drive.google.com/uc?export=download&id=1EE6-5FJd5q-RPoTxfy9Da11dF3RR4NID";
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    return;
+  }
+
+  // Normal local download
   const fileName = book + ".pdf";
 
   const link = document.createElement("a");
