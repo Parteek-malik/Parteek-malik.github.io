@@ -3,40 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <title>Book Downloader</title>
+
   <style>
     body {
-      font-family: Arial;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      width: 300px;
       text-align: center;
-      margin-top: 50px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      margin-bottom: 15px;
     }
 
     select, button {
+      width: 100%;
       padding: 10px;
-      font-size: 16px;
       margin-top: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
     }
 
-    #bookName {
-      margin-top: 20px;
+    select {
+      background: #f1f1f1;
+    }
+
+    button {
+      background: #4facfe;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #007bff;
+    }
+
+    #info {
+      margin-top: 15px;
       font-weight: bold;
-      color: green;
+      color: #333;
     }
 
     footer {
-      position: fixed;
-      bottom: 10px;
-      width: 100%;
-      font-size: 14px;
+      margin-top: 15px;
+      font-size: 12px;
       color: gray;
     }
   </style>
 </head>
+
 <body>
 
-  <h2>Select Subject</h2>
+<div class="card">
 
-  <select id="subject" onchange="showBookName()">
-    <option value="">-- Select Subject --</option>
+  <h2>📚 Book Downloader</h2>
+
+  <!-- Subject -->
+  <select id="subject" onchange="updateInfo()">
+    <option value="">Select Subject</option>
     <option value="english">English</option>
     <option value="hindi">Hindi</option>
     <option value="maths">Maths</option>
@@ -44,75 +82,88 @@
     <option value="science">Science</option>
   </select>
 
-  <br>
+  <!-- Book Type -->
+  <select id="type" onchange="updateInfo()">
+    <option value="">Select Type</option>
+    <option value="student">Student Book</option>
+    <option value="teacher">Teacher Guide</option>
+    <option value="notes">Notes</option>
+  </select>
+
   <button onclick="downloadBooks()">Download</button>
 
-  <div id="bookName"></div>
+  <div id="info"></div>
 
   <footer>Made by Parteek Malik</footer>
 
-  <script>
-    function showBookName() {
-      const subject = document.getElementById("subject").value;
-      const display = document.getElementById("bookName");
+</div>
 
-      if (subject === "english") {
-        display.innerText = "Selected Book: Kaveri";
-      } 
-      else if (subject === "hindi") {
-        display.innerText = "Selected Book: Malhar";
-      } 
-      else if (subject === "maths") {
-        display.innerText = "Selected Book: Mathematics";
-      } 
-      else if (subject === "social") {
-        display.innerText = "Selected Books: History, Civics, Geography, Economics";
-      } 
-      else if (subject === "science") {
-        display.innerText = "Selected Book: Science";
-      } 
-      else {
-        display.innerText = "";
-      }
-    }
+<script>
+function getBookName(subject) {
+  if (subject === "english") return "Kaveri";
+  if (subject === "hindi") return "Malhar";
+  if (subject === "maths") return "Mathematics";
+  if (subject === "social") return "History, Civics, Geography, Economics";
+  if (subject === "science") return "Science";
+  return "";
+}
 
-    function downloadFile(fileName) {
-      const link = document.createElement("a");
-      link.href = fileName;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+function updateInfo() {
+  const subject = document.getElementById("subject").value;
+  const type = document.getElementById("type").value;
+  const info = document.getElementById("info");
 
-    function downloadBooks() {
-      const subject = document.getElementById("subject").value;
+  if (!subject) {
+    info.innerText = "";
+    return;
+  }
 
-      if (!subject) {
-        alert("Please select a subject!");
-        return;
-      }
+  let text = "Book: " + getBookName(subject);
 
-      if (subject === "english") {
-        downloadFile("Kaveri.pdf");
-      } 
-      else if (subject === "hindi") {
-        downloadFile("Malhar.pdf");
-      } 
-      else if (subject === "maths") {
-        downloadFile("Mathematics.pdf");
-      } 
-      else if (subject === "social") {
-        downloadFile("History.pdf");
-        setTimeout(() => downloadFile("Civics.pdf"), 500);
-        setTimeout(() => downloadFile("Geography.pdf"), 1000);
-        setTimeout(() => downloadFile("Economics.pdf"), 1500);
-      } 
-      else if (subject === "science") {
-        downloadFile("Science.pdf");
-      }
-    }
-  </script>
+  if (type) {
+    text += " | Type: " + type;
+  }
+
+  info.innerText = text;
+}
+
+function downloadFile(fileName) {
+  const link = document.createElement("a");
+  link.href = fileName;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function downloadBooks() {
+  const subject = document.getElementById("subject").value;
+
+  if (!subject) {
+    alert("Please select subject!");
+    return;
+  }
+
+  if (subject === "english") {
+    downloadFile("Kaveri.pdf");
+  } 
+  else if (subject === "hindi") {
+    downloadFile("Malhar.pdf");
+  } 
+  else if (subject === "maths") {
+    downloadFile("Mathematics.pdf");
+  } 
+  else if (subject === "social") {
+    downloadFile("History.pdf");
+    setTimeout(() => downloadFile("Civics.pdf"), 500);
+    setTimeout(() => downloadFile("Geography.pdf"), 1000);
+    setTimeout(() => downloadFile("Economics.pdf"), 1500);
+  } 
+  else if (subject === "science") {
+    downloadFile("Science.pdf");
+  }
+}
+</script>
 
 </body>
 </html>
