@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Downloader</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    select, button {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    #bookName {
+      margin-top: 20px;
+      font-weight: bold;
+      color: green;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 10px;
+      width: 100%;
+      font-size: 14px;
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Select Subject</h2>
+
+  <select id="subject" onchange="showBookName()">
+    <option value="">-- Select Subject --</option>
+    <option value="english">English</option>
+    <option value="hindi">Hindi</option>
+    <option value="maths">Maths</option>
+    <option value="social">Social Science</option>
+    <option value="science">Science</option>
+  </select>
+
+  <br>
+  <button onclick="downloadBooks()">Download</button>
+
+  <div id="bookName"></div>
+
+  <footer>Made by Parteek Malik</footer>
+
+  <script>
+    function showBookName() {
+      const subject = document.getElementById("subject").value;
+      const display = document.getElementById("bookName");
+
+      if (subject === "english") {
+        display.innerText = "Selected Book: Kaveri";
+      } 
+      else if (subject === "hindi") {
+        display.innerText = "Selected Book: Malhar";
+      } 
+      else if (subject === "maths") {
+        display.innerText = "Selected Book: Mathematics";
+      } 
+      else if (subject === "social") {
+        display.innerText = "Selected Books: History, Civics, Geography, Economics";
+      } 
+      else if (subject === "science") {
+        display.innerText = "Selected Book: Science";
+      } 
+      else {
+        display.innerText = "";
+      }
+    }
+
+    function downloadFile(fileName) {
+      const link = document.createElement("a");
+      link.href = fileName;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function downloadBooks() {
+      const subject = document.getElementById("subject").value;
+
+      if (!subject) {
+        alert("Please select a subject!");
+        return;
+      }
+
+      if (subject === "english") {
+        downloadFile("Kaveri.pdf");
+      } 
+      else if (subject === "hindi") {
+        downloadFile("Malhar.pdf");
+      } 
+      else if (subject === "maths") {
+        downloadFile("Mathematics.pdf");
+      } 
+      else if (subject === "social") {
+        downloadFile("History.pdf");
+        setTimeout(() => downloadFile("Civics.pdf"), 500);
+        setTimeout(() => downloadFile("Geography.pdf"), 1000);
+        setTimeout(() => downloadFile("Economics.pdf"), 1500);
+      } 
+      else if (subject === "science") {
+        downloadFile("Science.pdf");
+      }
+    }
+  </script>
+
+</body>
+</html>
