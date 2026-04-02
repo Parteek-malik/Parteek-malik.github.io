@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      background: linear-gradient(135deg, #667eea, #764ba2);
       margin: 0;
       display: flex;
       justify-content: center;
@@ -19,9 +19,9 @@
       background: white;
       padding: 25px;
       border-radius: 15px;
-      width: 300px;
+      width: 320px;
       text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     }
 
     h2 {
@@ -37,19 +37,14 @@
       font-size: 15px;
     }
 
-    select {
-      background: #f1f1f1;
-    }
-
     button {
-      background: #4facfe;
+      background: #667eea;
       color: white;
       cursor: pointer;
-      transition: 0.3s;
     }
 
     button:hover {
-      background: #007bff;
+      background: #4b5bdc;
     }
 
     #info {
@@ -72,8 +67,8 @@
 
   <h2>📚 Book Downloader</h2>
 
-  <!-- Subject -->
-  <select id="subject" onchange="updateInfo()">
+  <!-- Subject Dropdown -->
+  <select id="subject" onchange="updateBooks()">
     <option value="">Select Subject</option>
     <option value="english">English</option>
     <option value="hindi">Hindi</option>
@@ -82,15 +77,12 @@
     <option value="science">Science</option>
   </select>
 
-  <!-- Book Type -->
-  <select id="type" onchange="updateInfo()">
-    <option value="">Select Type</option>
-    <option value="student">Student Book</option>
-    <option value="teacher">Teacher Guide</option>
-    <option value="notes">Notes</option>
+  <!-- Book Dropdown -->
+  <select id="book" onchange="updateInfo()">
+    <option value="">Select Book</option>
   </select>
 
-  <button onclick="downloadBooks()">Download</button>
+  <button onclick="downloadBook()">Download</button>
 
   <div id="info"></div>
 
@@ -99,18 +91,43 @@
 </div>
 
 <script>
-function getBookName(subject) {
-  if (subject === "english") return "Kaveri";
-  if (subject === "hindi") return "Malhar";
-  if (subject === "maths") return "Mathematics";
-  if (subject === "social") return "History, Civics, Geography, Economics";
-  if (subject === "science") return "Science";
-  return "";
+const booksData = {
+  english: ["Kaveri"],
+  hindi: ["Malhar"],
+  maths: ["Mathematics"],
+  social: ["History", "Civics", "Geography", "Economics"],
+  science: ["Science"]
+};
+
+function updateBooks() {
+  const subject = document.getElementById("subject").value;
+  const bookSelect = document.getElementById("book");
+  const info = document.getElementById("info");
+
+  bookSelect.innerHTML = '<option value="">Select Book</option>';
+
+  if (!subject) return;
+
+  const books = booksData[subject];
+
+  books.forEach(book => {
+    const option = document.createElement("option");
+    option.value = book;
+    option.text = book;
+    bookSelect.appendChild(option);
+  });
+
+  // Auto-select if only one book
+  if (books.length === 1) {
+    bookSelect.value = books[0];
+  }
+
+  updateInfo();
 }
 
 function updateInfo() {
   const subject = document.getElementById("subject").value;
-  const type = document.getElementById("type").value;
+  const book = document.getElementById("book").value;
   const info = document.getElementById("info");
 
   if (!subject) {
@@ -118,50 +135,31 @@ function updateInfo() {
     return;
   }
 
-  let text = "Book: " + getBookName(subject);
+  let text = "Subject: " + subject;
 
-  if (type) {
-    text += " | Type: " + type;
+  if (book) {
+    text += " | Book: " + book;
   }
 
   info.innerText = text;
 }
 
-function downloadFile(fileName) {
+function downloadBook() {
+  const book = document.getElementById("book").value;
+
+  if (!book) {
+    alert("Please select a book!");
+    return;
+  }
+
+  const fileName = book + ".pdf";
+  
   const link = document.createElement("a");
   link.href = fileName;
   link.download = fileName;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-}
-
-function downloadBooks() {
-  const subject = document.getElementById("subject").value;
-
-  if (!subject) {
-    alert("Please select subject!");
-    return;
-  }
-
-  if (subject === "english") {
-    downloadFile("Kaveri.pdf");
-  } 
-  else if (subject === "hindi") {
-    downloadFile("Malhar.pdf");
-  } 
-  else if (subject === "maths") {
-    downloadFile("Mathematics.pdf");
-  } 
-  else if (subject === "social") {
-    downloadFile("History.pdf");
-    setTimeout(() => downloadFile("Civics.pdf"), 500);
-    setTimeout(() => downloadFile("Geography.pdf"), 1000);
-    setTimeout(() => downloadFile("Economics.pdf"), 1500);
-  } 
-  else if (subject === "science") {
-    downloadFile("Science.pdf");
-  }
 }
 </script>
 
