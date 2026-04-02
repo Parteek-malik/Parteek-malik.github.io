@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+
+  <!-- 🔥 Important for mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Book Downloader</title>
 
   <style>
@@ -9,38 +13,47 @@
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #667eea, #764ba2);
       margin: 0;
+      padding: 15px;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
     }
 
     .card {
       background: white;
-      padding: 25px;
+      padding: 20px;
       border-radius: 15px;
-      width: 320px;
+      width: 100%;
+      max-width: 400px;
       text-align: center;
       box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     }
 
     h2 {
       margin-bottom: 15px;
+      font-size: 22px;
     }
 
     select, button {
       width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 10px;
       border: none;
-      font-size: 15px;
+      font-size: 16px;
+    }
+
+    select {
+      background: #f1f1f1;
     }
 
     button {
       background: #667eea;
       color: white;
+      font-weight: bold;
       cursor: pointer;
+      transition: 0.3s;
     }
 
     button:hover {
@@ -51,12 +64,25 @@
       margin-top: 15px;
       font-weight: bold;
       color: #333;
+      font-size: 15px;
     }
 
     footer {
       margin-top: 15px;
-      font-size: 12px;
+      font-size: 13px;
       color: gray;
+    }
+
+    /* 📱 Extra small devices */
+    @media (max-width: 350px) {
+      h2 {
+        font-size: 18px;
+      }
+
+      select, button {
+        font-size: 14px;
+        padding: 10px;
+      }
     }
   </style>
 </head>
@@ -67,7 +93,7 @@
 
   <h2>📚 Book Downloader</h2>
 
-  <!-- Subject Dropdown -->
+  <!-- Subject -->
   <select id="subject" onchange="updateBooks()">
     <option value="">Select Subject</option>
     <option value="english">English</option>
@@ -77,7 +103,7 @@
     <option value="science">Science</option>
   </select>
 
-  <!-- Book Dropdown -->
+  <!-- Book -->
   <select id="book" onchange="updateInfo()">
     <option value="">Select Book</option>
   </select>
@@ -117,7 +143,6 @@ function updateBooks() {
     bookSelect.appendChild(option);
   });
 
-  // Auto-select if only one book
   if (books.length === 1) {
     bookSelect.value = books[0];
   }
@@ -153,7 +178,7 @@ function downloadBook() {
   }
 
   const fileName = book + ".pdf";
-  
+
   const link = document.createElement("a");
   link.href = fileName;
   link.download = fileName;
