@@ -5,77 +5,88 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Flip Book Viewer</title>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4.1.0/turn.min.js"></script>
+
 <style>
 body {
   margin: 0;
-  background: #333;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  font-family: Arial;
+  background: #222;
+  color: white;
+  text-align: center;
+}
+
+select {
+  padding: 10px;
+  margin: 15px;
+  font-size: 16px;
 }
 
 #flipbook {
   width: 90%;
   max-width: 800px;
   height: 500px;
+  margin: auto;
+}
+
+.page {
   background: white;
 }
-canvas {
+
+iframe {
   width: 100%;
+  height: 100%;
+  border: none;
+}
+
+footer {
+  margin: 10px;
+  color: gray;
 }
 </style>
-
-<!-- PDF.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
-
-<!-- Turn.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4.1.0/turn.min.js"></script>
-
 </head>
 
 <body>
 
+<h2>📖 Flip Book Viewer</h2>
+
+<select id="subject" onchange="loadBook()">
+  <option value="">Select Subject</option>
+  <option value="Kaveri.pdf">English</option>
+  <option value="Malhar.pdf">Hindi</option>
+  <option value="Mathematics.pdf">Maths</option>
+  <option value="Science.pdf">Science</option>
+</select>
+
 <div id="flipbook"></div>
 
+<footer>Made by Parteek Malik</footer>
+
 <script>
-const url = "Kaveri.pdf"; // change dynamically if needed
+function loadBook() {
+  const file = document.getElementById("subject").value;
+  const flipbook = document.getElementById("flipbook");
 
-let pdfDoc = null;
+  flipbook.innerHTML = "";
 
-pdfjsLib.getDocument(url).promise.then(function(pdf) {
-  pdfDoc = pdf;
+  if (!file) return;
 
-  for (let i = 1; i <= pdf.numPages; i++) {
-    pdf.getPage(i).then(function(page) {
-      const viewport = page.getViewport({ scale: 1 });
+  // Create pages (simple version: 10 pages)
+  for (let i = 1; i <= 10; i++) {
+    const page = document.createElement("div");
+    page.className = "page";
 
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-
-      page.render({
-        canvasContext: context,
-        viewport: viewport
-      });
-
-      const div = document.createElement("div");
-      div.appendChild(canvas);
-
-      document.getElementById("flipbook").appendChild(div);
-
-      if (i === pdf.numPages) {
-        $("#flipbook").turn({
-          width: 800,
-          height: 500,
-          autoCenter: true
-        });
-      }
-    });
+    page.innerHTML = `<iframe src="${file}#page=${i}"></iframe>`;
+    flipbook.appendChild(page);
   }
-});
+
+  $("#flipbook").turn({
+    width: "100%",
+    height: 500,
+    autoCenter: true
+  });
+}
 </script>
 
 </body>
