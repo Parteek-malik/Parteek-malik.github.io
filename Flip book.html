@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flip Book Viewer</title>
+
+<style>
+body {
+  margin: 0;
+  background: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#flipbook {
+  width: 90%;
+  max-width: 800px;
+  height: 500px;
+  background: white;
+}
+canvas {
+  width: 100%;
+}
+</style>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+
+<!-- Turn.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4.1.0/turn.min.js"></script>
+
+</head>
+
+<body>
+
+<div id="flipbook"></div>
+
+<script>
+const url = "Kaveri.pdf"; // change dynamically if needed
+
+let pdfDoc = null;
+
+pdfjsLib.getDocument(url).promise.then(function(pdf) {
+  pdfDoc = pdf;
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    pdf.getPage(i).then(function(page) {
+      const viewport = page.getViewport({ scale: 1 });
+
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      page.render({
+        canvasContext: context,
+        viewport: viewport
+      });
+
+      const div = document.createElement("div");
+      div.appendChild(canvas);
+
+      document.getElementById("flipbook").appendChild(div);
+
+      if (i === pdf.numPages) {
+        $("#flipbook").turn({
+          width: 800,
+          height: 500,
+          autoCenter: true
+        });
+      }
+    });
+  }
+});
+</script>
+
+</body>
+</html>
