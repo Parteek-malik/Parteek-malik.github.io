@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF OCR Tool - Extract Text from PDF</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Trebuchet MS", "Arial", sans-serif;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0d0d1d 100%);
+      color: #00eaff;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 234, 255, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(255, 0, 255, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(45deg, #00eaff, #ff00ff, #00eaff);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      animation: gradientShift 3s ease infinite;
+    }
+
+    .subtitle {
+      color: #b0e0e6;
+      font-size: 1.1rem;
+    }
+
+    .card {
+      background: linear-gradient(135deg, rgba(17, 17, 30, 0.9) 0%, rgba(30, 20, 50, 0.7) 100%);
+      border: 2px solid #00eaff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 234, 255, 0.3);
+      margin-bottom: 30px;
+      animation: slideUp 0.6s ease-out;
+    }
+
+    .upload-section {
+      margin-bottom: 30px;
+    }
+
+    .upload-section h2 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      color: #00eaff;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-input-label {
+      display: block;
+      padding: 30px;
+      border: 3px dashed #00eaff;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(0, 234, 255, 0.05);
+    }
+
+    .file-input-label:hover {
+      border-color: #ff00ff;
+      background: rgba(0, 234, 255, 0.1);
+      transform: scale(1.02);
+    }
+
+    .file-input-label.drag-over {
+      border-color: #ff00ff;
+      background: rgba(255, 0, 255, 0.1);
+    }
+
+    #pdfInput {
+      display: none;
+    }
+
+    .upload-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .upload-text {
+      font-size: 1rem;
+      color: #b0e0e6;
+      margin-bottom: 5px;
+    }
+
+    .upload-hint {
+      font-size: 0.9rem;
+      color: #00eaff;
+      opacity: 0.7;
+    }
+
+    .file-name {
+      margin-top: 20px;
+      padding: 10px;
+      background: rgba(0, 234, 255, 0.1);
+      border-radius: 5px;
+      color: #00eaff;
+      display: none;
+    }
+
+    .options-section {
+      margin: 30px 0;
+      padding: 20px;
+      background: rgba(0, 234, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .option-group {
+      margin-bottom: 20px;
+    }
+
+    .option-group label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      margin-bottom: 10px;
+      color: #b0e0e6;
+    }
+
+    .option-group input[type="checkbox"],
+    .option-group input[type="radio"] {
+      margin-right: 10px;
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    button {
+      background: linear-gradient(45deg, #00eaff, #0088ff);
+      border: none;
+      padding: 15px 30px;
+      color: #000;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 234, 255, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 234, 255, 0.6);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #extractBtn {
+      grid-column: 1 / 3;
+    }
+
+    .output-section {
+      display: none;
+    }
+
+    .output-section.active {
+      display: block;
+      animation: slideUp 0.6s ease-out;
+    }
+
+    .output-section h2 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      color: #00eaff;
+    }
+
+    .text-display {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid #00eaff;
+      padding: 20px;
+      border-radius: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+      color: #b0e0e6;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-box {
+      background: rgba(0, 234, 255, 0.1);
+      border: 1px solid #00eaff;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: #00eaff;
+      opacity: 0.8;
+      margin-bottom: 5px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #00eaff;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    .spinner {
+      border: 4px solid rgba(0, 234, 255, 0.2);
+      border-top: 4px solid #00eaff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error {
+      display: none;
+      padding: 15px;
+      background: rgba(255, 100, 100, 0.1);
+      border: 1px solid #ff6464;
+      border-radius: 10px;
+      color: #ff9999;
+      margin-bottom: 20px;
+    }
+
+    .error.active {
+      display: block;
+    }
+
+    .success {
+      display: none;
+      padding: 15px;
+      background: rgba(100, 255, 100, 0.1);
+      border: 1px solid #64ff64;
+      border-radius: 10px;
+      color: #99ff99;
+      margin-bottom: 20px;
+    }
+
+    .success.active {
+      display: block;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      padding: 20px;
+      opacity: 0.7;
+      border-top: 1px solid rgba(0, 234, 255, 0.2);
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .button-group {
+        grid-template-columns: 1fr;
+      }
+
+      #extractBtn {
+        grid-column: 1;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 234, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #00eaff;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ff00ff;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>📄 PDF OCR Tool</h1>
+      <p class="subtitle">Extract text from PDF files and download as PDF</p>
+    </header>
+
+    <div class="card">
+      <div class="error" id="error"></div>
+      <div class="success" id="success"></div>
+
+      <!-- Upload Section -->
+      <div class="upload-section">
+        <h2>📤 Upload PDF File</h2>
+        <div class="file-input-wrapper">
+          <label for="pdfInput" class="file-input-label" id="uploadLabel">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">Click to upload or drag and drop</div>
+            <div class="upload-hint">PDF files only (Max 50MB)</div>
+          </label>
+          <input type="file" id="pdfInput" accept=".pdf" />
+          <div class="file-name" id="fileName"></div>
+        </div>
+      </div>
+
+      <!-- Options Section -->
+      <div class="options-section">
+        <h3 style="color: #00eaff; margin-bottom: 15px;">⚙️ OCR Options</h3>
+        
+        <div class="option-group">
+          <label>
+            <input type="checkbox" id="includeImages" checked>
+            Include images in output
+          </label>
+        </div>
+
+        <div class="option-group">
+          <label>Language:</label>
+          <select id="language" style="padding: 8px; border-radius: 5px; background: #111; color: #00eaff; border: 1px solid #00eaff; margin-top: 5px; width: 100%;">
+            <option value="eng">English</option>
+            <option value="hin">Hindi (हिंदी)</option>
+            <option value="fra">French</option>
+            <option value="spa">Spanish</option>
+            <option value="deu">German</option>
+            <option value="jpn">Japanese</option>
+            <option value="chi_sim">Chinese (Simplified)</option>
+            <option value="ara">Arabic</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Button Group -->
+      <div class="button-group">
+        <button id="clearBtn">🗑️ Clear</button>
+        <button id="previewBtn" disabled>👁️ Preview</button>
+        <button id="extractBtn" disabled>🔍 Extract Text</button>
+      </div>
+
+      <!-- Loading Section -->
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Processing PDF... This may take a moment</p>
+      </div>
+
+      <!-- Output Section -->
+      <div class="output-section" id="outputSection">
+        <h2>📊 Extracted Text</h2>
+        
+        <div class="stats">
+          <div class="stat-box">
+            <div class="stat-label">Characters</div>
+            <div class="stat-value" id="charCount">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Words</div>
+            <div class="stat-value" id="wordCount">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Pages</div>
+            <div class="stat-value" id="pageCount">0</div>
+          </div>
+        </div>
+
+        <div class="text-display" id="textOutput"></div>
+
+        <div class="button-group">
+          <button id="downloadPdfBtn">📥 Download as PDF</button>
+          <button id="downloadTxtBtn">💾 Download as TXT</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>💡 Tip: Upload a PDF file to extract text using OCR technology</p>
+      <p>🔒 Privacy: Your files are processed locally in your browser</p>
+    </footer>
+  </div>
+
+  <!-- PDF.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <!-- Tesseract.js library -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+  <!-- jsPDF library for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <script>
+    let selectedFile = null;
+    let extractedText = "";
+    let pageCount = 0;
+
+    // Set PDF.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    const pdfInput = document.getElementById('pdfInput');
+    const uploadLabel = document.getElementById('uploadLabel');
+    const fileNameDisplay = document.getElementById('fileName');
+    const extractBtn = document.getElementById('extractBtn');
+    const previewBtn = document.getElementById('previewBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+    const downloadTxtBtn = document.getElementById('downloadTxtBtn');
+    const loading = document.getElementById('loading');
+    const outputSection = document.getElementById('outputSection');
+    const textOutput = document.getElementById('textOutput');
+    const errorDiv = document.getElementById('error');
+    const successDiv = document.getElementById('success');
+    const language = document.getElementById('language');
+
+    // File input change event
+    pdfInput.addEventListener('change', handleFileSelect);
+
+    // Drag and drop events
+    uploadLabel.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadLabel.classList.add('drag-over');
+    });
+
+    uploadLabel.addEventListener('dragleave', () => {
+      uploadLabel.classList.remove('drag-over');
+    });
+
+    uploadLabel.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadLabel.classList.remove('drag-over');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        pdfInput.files = files;
+        handleFileSelect();
+      }
+    });
+
+    function handleFileSelect() {
+      selectedFile = pdfInput.files[0];
+      
+      if (!selectedFile) return;
+
+      if (selectedFile.type !== 'application/pdf') {
+        showError('Please select a valid PDF file');
+        return;
+      }
+
+      if (selectedFile.size > 50 * 1024 * 1024) {
+        showError('File size exceeds 50MB limit');
+        return;
+      }
+
+      fileNameDisplay.textContent = `✓ Selected: ${selectedFile.name}`;
+      fileNameDisplay.style.display = 'block';
+      extractBtn.disabled = false;
+      previewBtn.disabled = false;
+      clearError();
+    }
+
+    clearBtn.addEventListener('click', () => {
+      selectedFile = null;
+      extractedText = "";
+      pdfInput.value = '';
+      fileNameDisplay.style.display = 'none';
+      extractBtn.disabled = true;
+      previewBtn.disabled = true;
+      outputSection.classList.remove('active');
+      clearError();
+    });
+
+    previewBtn.addEventListener('click', async () => {
+      if (!selectedFile) return;
+      
+      try {
+        loading.classList.add('active');
+        const fileReader = new FileReader();
+        fileReader.onload = async (e) => {
+          const pdf = await pdfjsLib.getDocument(e.target.result).promise;
+          pageCount = pdf.numPages;
+          
+          let previewText = `📄 PDF Preview (${pageCount} pages)\n`;
+          previewText += '='.repeat(50) + '\n\n';
+          
+          // Extract first 2 pages for preview
+          for (let i = 1; i <= Math.min(2, pageCount); i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            previewText += `--- Page ${i} ---\n`;
+            textContent.items.forEach(item => {
+              previewText += item.str + ' ';
+            });
+            previewText += '\n\n';
+          }
+          
+          if (pageCount > 2) {
+            previewText += `... (${pageCount - 2} more pages)`;
+          }
+          
+          textOutput.textContent = previewText;
+          outputSection.classList.add('active');
+          loading.classList.remove('active');
+        };
+        fileReader.readAsArrayBuffer(selectedFile);
+      } catch (err) {
+        loading.classList.remove('active');
+        showError('Error previewing PDF: ' + err.message);
+      }
+    });
+
+    extractBtn.addEventListener('click', async () => {
+      if (!selectedFile) return;
+
+      try {
+        loading.classList.add('active');
+        extractBtn.disabled = true;
+        clearError();
+
+        const fileReader = new FileReader();
+        fileReader.onload = async (e) => {
+          const pdf = await pdfjsLib.getDocument(e.target.result).promise;
+          pageCount = pdf.numPages;
+          extractedText = "";
+
+          // Extract text from all pages with OCR
+          for (let i = 1; i <= pageCount; i++) {
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale: 2 });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+
+            await page.render({ canvasContext: context, viewport }).promise;
+
+            // Use Tesseract for OCR
+            const result = await Tesseract.recognize(canvas, language.value);
+            extractedText += `\n--- Page ${i} ---\n${result.data.text}\n`;
+          }
+
+          updateStats();
+          outputSection.classList.add('active');
+          loading.classList.remove('active');
+          extractBtn.disabled = false;
+          showSuccess(`✓ Successfully extracted text from ${pageCount} pages`);
+        };
+
+        fileReader.readAsArrayBuffer(selectedFile);
+      } catch (err) {
+        loading.classList.remove('active');
+        extractBtn.disabled = false;
+        showError('Error extracting text: ' + err.message);
+      }
+    });
+
+    downloadPdfBtn.addEventListener('click', () => {
+      if (!extractedText) {
+        showError('No text to download. Please extract text first.');
+        return;
+      }
+
+      const element = document.createElement('div');
+      element.style.padding = '20px';
+      element.style.fontFamily = 'Arial, sans-serif';
+      element.innerHTML = extractedText.replace(/\n/g, '<br>');
+
+      const opt = {
+        margin: 10,
+        filename: `${selectedFile.name.replace('.pdf', '')}_ocr.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+      };
+
+      html2pdf().set(opt).from(element).save();
+      showSuccess('✓ PDF downloaded successfully');
+    });
+
+    downloadTxtBtn.addEventListener('click', () => {
+      if (!extractedText) {
+        showError('No text to download. Please extract text first.');
+        return;
+      }
+
+      const element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(extractedText));
+      element.setAttribute('download', `${selectedFile.name.replace('.pdf', '')}_ocr.txt`);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      showSuccess('✓ Text file downloaded successfully');
+    });
+
+    function updateStats() {
+      const charCount = extractedText.length;
+      const wordCount = extractedText.trim().split(/\s+/).length;
+
+      document.getElementById('charCount').textContent = charCount.toLocaleString();
+      document.getElementById('wordCount').textContent = wordCount.toLocaleString();
+      document.getElementById('pageCount').textContent = pageCount;
+
+      textOutput.textContent = extractedText;
+    }
+
+    function showError(message) {
+      errorDiv.textContent = '❌ ' + message;
+      errorDiv.classList.add('active');
+      setTimeout(() => clearError(), 5000);
+    }
+
+    function clearError() {
+      errorDiv.classList.remove('active');
+    }
+
+    function showSuccess(message) {
+      successDiv.textContent = message;
+      successDiv.classList.add('active');
+      setTimeout(() => successDiv.classList.remove('active'), 3000);
+    }
+  </script>
+</body>
+</html>
